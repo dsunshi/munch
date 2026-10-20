@@ -17,14 +17,13 @@ extra-doc-files:     README.md
                      CHANGELOG.md
 tested-with:         GHC == 9.8.4
                      GHC == 9.10.3
-                     GHC == 9.12.2
 
 source-repository head
   type:                git
   location:            https://github.com/dsunshi/munch.git
 
 common common-options
-  build-depends:       base >= 4.19.2.0 && < 4.22
+  build-depends:       base >= 4.19.2.0 && < 4.21, linear
 
   ghc-options:         -Wall
                        -Wcompat
