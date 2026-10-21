@@ -23,7 +23,7 @@ source-repository head
   location:            https://github.com/dsunshi/munch.git
 
 common common-options
-  build-depends:       base >= 4.19.2.0 && < 4.21, linear, lens
+  build-depends:       base >= 4.19.2.0 && < 4.21
 
   ghc-options:         -Wall
                        -Wcompat
@@ -74,8 +74,9 @@ common common-options
 
 library
   import:              common-options
+  build-depends:       linear, lens
   hs-source-dirs:      src
-  exposed-modules:     Munch
+  exposed-modules:     Munch, Turtle
 
 executable munch
   import:              common-options
