@@ -63,3 +63,4 @@ result
 dist-*
 .hie/
 tags
+*.svg
