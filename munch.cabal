@@ -74,9 +74,9 @@ common common-options
 
 library
   import:              common-options
-  build-depends:       linear, lens
+  build-depends:       linear, lens, mtl
   hs-source-dirs:      src
-  exposed-modules:     Munch, Turtle
+  exposed-modules:     Munch, TurtleState, Turtle
 
 executable munch
   import:              common-options

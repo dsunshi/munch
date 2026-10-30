@@ -1,47 +1,50 @@
-{- |
-Copyright: (c) 2026 D. Sunshine
-SPDX-License-Identifier: MIT
-Maintainer: D. Sunshine <david@sunshines.org>
 
-See README for more info
--}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
-module Turtle (TurtleData, position, empty, up, down, forward, backward, right, left, rotate) where
+module Turtle where
 
-import Linear.V2
-import Linear.V3
-import Linear.Vector
-import Linear.Metric
-import Control.Lens
+import qualified Control.Monad.State as ST
+import qualified TurtleState as T
 
-data TurtleData n = TurtleData {
-  position :: V3 n,
-  heading  :: V2 n
-  } deriving stock (Show)
+import Data.Functor.Identity
+import Linear.Epsilon
 
--- Turtle at the origin heading y+ direction
-empty :: TurtleData Double
-empty = TurtleData (V3 0.0 0.0 0.0) (normalize $ V2 1.0 0.0)
-{-# WARNING in "x-unsafe-internals" empty "This is exported only for testing" #-}
+type TurtleT n = ST.StateT (T.TurtleData n)
+type Turtle n = TurtleT n Identity
 
-up :: Num a => a -> TurtleData a -> TurtleData a
-up d t = t { position = t.position & _z %~ (+ d) }
+-- | A more general way to run the turtle. Returns a computation in the
+-- underlying monad @m@ yielding the final turtle state.
+-- runTurtleT :: (Floating n, Monad m) => TurtleT n m a -> m (T.TurtleData n)
+-- empty :: (Linear.Epsilon.Epsilon a, Floating a) => TurtleData a
+runTurtleT :: (Linear.Epsilon.Epsilon n, Floating n, Monad m) => TurtleT n m a -> m (T.TurtleData n)
+runTurtleT t = ST.execStateT t T.initialT
 
-down :: Num a => a -> TurtleData a -> TurtleData a
-down = up . negate
+-- -- | Run the turtle, yielding the final turtle state.
+-- runTurtle :: Floating n => Turtle n a -> T.TurtleData n
+-- runTurtle :: Monad m => TurtleT Double m a -> m (T.TurtleData Double)
+runTurtle :: (Linear.Epsilon.Epsilon n, Floating n)  => Turtle n a -> T.TurtleData n
+runTurtle = runIdentity . runTurtleT
 
-forward :: Num a => a -> TurtleData a -> TurtleData a
-forward d t = t { position = t.position & _xy %~ (+ d *^ t.heading) }
+-- -- Motion commands
 
-backward :: Num a => a -> TurtleData a -> TurtleData a
-backward = forward . negate
+up :: (Num n, Monad m) => n -> TurtleT n m ()
+up x = ST.modify $ T.up x
 
-right :: Floating a => a -> TurtleData a -> TurtleData a
-right a t = t { heading = rotate (a * pi / 180.0) t.heading } -- deg -> rad
+down :: (Num n, Monad m) => n -> TurtleT n m ()
+down x = ST.modify $ T.down x
 
-left :: Floating a => a -> TurtleData a -> TurtleData a
-left = right . negate
+-- | Move the turtle forward, along the current heading.
+forward :: (Num n, Monad m) => n -> TurtleT n m ()
+forward x = ST.modify $ T.forward x
 
-rotate :: Floating a => a -> V2 a -> V2 a
-rotate a v = cos a *^ v + sin a *^ (perp v) 
-{-# WARNING in "x-unsafe-internals" rotate "This is exported only for testing" #-}
+-- -- | Move the turtle backward, directly away from the current heading.
+backward :: (Num n, Monad m) => n -> TurtleT n m ()
+backward x = ST.modify $ T.backward x
+
+-- -- | Modify the current heading to the left by the specified angle in degrees.
+left :: (Floating n, Monad m) => n -> TurtleT n m ()
+left d = ST.modify $ T.left d
+
+-- -- | Modify the current heading to the right by the specified angle in degrees.
+right :: (Floating n, Monad m) => n -> TurtleT n m ()
+right d = ST.modify $ T.right d

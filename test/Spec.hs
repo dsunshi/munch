@@ -1,9 +1,16 @@
 module Main (main) where
 
-import qualified Turtle as T
+import qualified TurtleState as T
+import Turtle
 
 import Test.Hspec
 import Linear.V3
+
+testTurtle :: Turtle Double ()
+testTurtle = do
+  forward 100
+  right 90
+  forward 50
 
 testEmpty :: Spec
 testEmpty = describe "Turtle.empty" $ do
