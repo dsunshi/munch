@@ -10,9 +10,7 @@ import qualified TurtleState as T
 
 testTurtle :: Turtle Double ()
 testTurtle = do
-  forward 100
-  right 90
-  forward 50
+  up 20
 
 main :: IO ()
 main = print $ runTurtle testTurtle

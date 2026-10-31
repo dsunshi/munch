@@ -41,8 +41,11 @@ instance Show GCode where
   show Off                    = "M84   ; Disable motors"
   show Origin                 = "G92 X0 Y0 ; Set current position to origin"
 
-down :: Double -> Double -> GCode
-down = Down
+defaultFeed :: Double
+defaultFeed = 1000.0
+
+down :: Double -> GCode
+down = Down defaultFeed
 
 up :: Double -> Double -> GCode
 up = Up

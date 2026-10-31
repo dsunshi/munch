@@ -29,27 +29,21 @@ initialT :: (Linear.Epsilon.Epsilon a, Floating a) => TurtleData a
 initialT = TurtleData origin (normalize $ V2 1.0 0.0) [origin]
 
 up :: Num a => a -> TurtleData a -> TurtleData a
-up = move moveUp
+up = move up'
 
-move :: Num a => (a -> TurtleData a -> TurtleData a) -> a -> TurtleData a -> TurtleData a
-move f d t = TurtleData t'.position t'.heading (t'.path <> [t'.position])
-  where
-    t' = f d t
-{-# WARNING in "x-unsafe-internals" move "This is exported only for testing" #-}
-
-moveUp :: Num a => a -> TurtleData a -> TurtleData a
-moveUp d t = t { position = t.position & _z %~ (+ d) }
-{-# WARNING in "x-unsafe-internals" moveUp "This is exported only for testing" #-}
+up' :: Num a => a -> TurtleData a -> TurtleData a
+up' d t = t { position = t.position & _z %~ (+ d) }
+{-# WARNING in "x-unsafe-internals" up' "This is exported only for testing" #-}
 
 down :: Num a => a -> TurtleData a -> TurtleData a
 down = up . negate
 
 forward :: Num a => a -> TurtleData a -> TurtleData a
-forward = move moveForward
+forward = move forward'
 
-moveForward :: Num a => a -> TurtleData a -> TurtleData a
-moveForward d t = t { position = t.position & _xy %~ (+ d *^ t.heading) }
-{-# WARNING in "x-unsafe-internals" moveForward "This is exported only for testing" #-}
+forward' :: Num a => a -> TurtleData a -> TurtleData a
+forward' d t = t { position = t.position & _xy %~ (+ d *^ t.heading) }
+{-# WARNING in "x-unsafe-internals" forward' "This is exported only for testing" #-}
 
 backward :: Num a => a -> TurtleData a -> TurtleData a
 backward = forward . negate
@@ -63,3 +57,9 @@ left = right . negate
 rotate :: Floating a => a -> V2 a -> V2 a
 rotate a v = cos a *^ v + sin a *^ (perp v) 
 {-# WARNING in "x-unsafe-internals" rotate "This is exported only for testing" #-}
+
+move :: Num a => (a -> TurtleData a -> TurtleData a) -> a -> TurtleData a -> TurtleData a
+move f d t = TurtleData t'.position t'.heading (t'.path <> [t'.position])
+  where
+    t' = f d t
+{-# WARNING in "x-unsafe-internals" move "This is exported only for testing" #-}
