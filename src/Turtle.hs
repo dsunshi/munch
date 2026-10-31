@@ -8,6 +8,7 @@ import qualified TurtleState as T
 
 import Data.Functor.Identity
 import Linear.Epsilon
+import Linear.V3
 
 type TurtleT n = ST.StateT (T.TurtleData n)
 type Turtle n = TurtleT n Identity

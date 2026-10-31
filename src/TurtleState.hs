@@ -6,7 +6,7 @@ Maintainer: D. Sunshine <david@sunshines.org>
 See README for more info
 -}
 
-module TurtleState (TurtleData, position, initialT, up, down, forward, backward, right, left, rotate) where
+module TurtleState (TurtleData, path, position, initialT, up, down, forward, backward, right, left, rotate) where
 
 import Linear.V2
 import Linear.V3
@@ -14,6 +14,11 @@ import Linear.Vector
 import Linear.Metric
 import Control.Lens
 import Linear.Epsilon
+
+
+-- TODO:
+-- Push ([): Saves the turtle's current state (coordinates x, y, heading angle, pen settings, etc.) onto a memory stack.
+-- Pop (]): Removes and restores the most recently saved state from the stack, moving the turtle back to that exact point and direction.
 
 data TurtleData n = TurtleData {
   position :: V3 n,
@@ -26,7 +31,7 @@ origin = V3 0.0 0.0 0.0
 
 -- Turtle at the origin heading y+ direction
 initialT :: (Linear.Epsilon.Epsilon a, Floating a) => TurtleData a
-initialT = TurtleData origin (normalize $ V2 1.0 0.0) [origin]
+initialT = TurtleData origin (normalize $ V2 0.0 1.0) [origin]
 
 up :: Num a => a -> TurtleData a -> TurtleData a
 up = move up'
@@ -59,7 +64,7 @@ rotate a v = cos a *^ v + sin a *^ (perp v)
 {-# WARNING in "x-unsafe-internals" rotate "This is exported only for testing" #-}
 
 move :: Num a => (a -> TurtleData a -> TurtleData a) -> a -> TurtleData a -> TurtleData a
-move f d t = TurtleData t'.position t'.heading (t'.path <> [t'.position])
+move f d t = TurtleData t'.position t'.heading (t'.path <> [t'.position - t.position])
   where
     t' = f d t
 {-# WARNING in "x-unsafe-internals" move "This is exported only for testing" #-}

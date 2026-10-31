@@ -64,3 +64,4 @@ dist-*
 .hie/
 tags
 *.svg
+*.gcode

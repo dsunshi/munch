@@ -6,14 +6,20 @@ import Diagrams.Prelude
 import Diagrams.Backend.SVG.CmdLine
 
 import Turtle
+import GCode
 import qualified TurtleState as T
 
 testTurtle :: Turtle Double ()
 testTurtle = do
-  up 20
+  right 45
+  forward 75
+  left 90
+  forward 75
+  left 90
+  forward 75
 
 main :: IO ()
-main = print $ runTurtle testTurtle
+main = print $ fromTurtle prusa testTurtle
 
 -- myCircle :: Diagram B
 -- myCircle = circle 2 # lc red
